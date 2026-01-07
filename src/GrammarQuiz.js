@@ -1,0 +1,916 @@
+import React, { useState, useEffect } from 'react';
+import { ChevronRight, ChevronLeft, RotateCcw, Check, X, Award, BookOpen } from 'lucide-react';
+import { getExplanation } from './explanations';
+
+const GrammarQuiz = () => {
+  const questions = [
+    {
+      id: 1,
+      question: "Tim ____________ the news, while his son was playing computer games.",
+      options: ["is watching", "watches", "was watching", "watching"],
+      correct: 2
+    },
+    {
+      id: 2,
+      question: "Lenny ____________ his old house two months ago.",
+      options: ["were selling", "sells", "is selling", "sold"],
+      correct: 3
+    },
+    {
+      id: 3,
+      question: "He didn't meet Joe and Alf, because they left ____________ than they usually do.",
+      options: ["early", "earlier", "earliest", "the earliest"],
+      correct: 1
+    },
+    {
+      id: 4,
+      question: "____________ you finish your report on time?",
+      options: ["Was", "Are", "Did", "Were"],
+      correct: 2
+    },
+    {
+      id: 5,
+      question: "I was resting all day yesterday, because I was ____________ tired.",
+      options: ["terrible", "most terrible", "terribly", "more terribly"],
+      correct: 2
+    },
+    {
+      id: 6,
+      question: "Robert was crossing the street when he ____________ Fred riding a motorcycle.",
+      options: ["saw", "was seeing", "seeing", "is seeing"],
+      correct: 0
+    },
+    {
+      id: 7,
+      question: "This artist is ____________ famous of all three that you mentioned.",
+      options: ["the less", "least", "less", "the least"],
+      correct: 3
+    },
+    {
+      id: 8,
+      question: "That's the boy ____________ father is our teacher.",
+      options: ["who", "which", "whose", "that"],
+      correct: 2
+    },
+    {
+      id: 9,
+      question: "Can you tell me ____________ to put these boxes?",
+      options: ["where", "when", "which", "who"],
+      correct: 0
+    },
+    {
+      id: 10,
+      question: "Mark, ____________ is only twenty, teaches French.",
+      options: ["which", "who", "when", "whose"],
+      correct: 1
+    },
+    {
+      id: 11,
+      question: "My doctor advised me to ____________ a sport.",
+      options: ["take off", "take after", "take up", "take on"],
+      correct: 2
+    },
+    {
+      id: 12,
+      question: "I can't believe that they ____________ your offer.",
+      options: ["turned on", "turned off", "turned out", "turned down"],
+      correct: 3
+    },
+    {
+      id: 13,
+      question: "When I suggested a walk in the woods, he ____________.",
+      options: ["credited", "nodded", "raised", "shook"],
+      correct: 1
+    },
+    {
+      id: 14,
+      question: "After his mother's ____________, he moved to Argentina.",
+      options: ["death", "strength", "power", "impression"],
+      correct: 0
+    },
+    {
+      id: 15,
+      question: "It was really ____________ that nobody was hurt in that accident.",
+      options: ["strong", "powerful", "incredible", "truthful"],
+      correct: 2
+    },
+    {
+      id: 16,
+      question: "Both my children are afraid ____________ the dark.",
+      options: ["of", "for", "on", "with"],
+      correct: 0
+    },
+    {
+      id: 17,
+      question: "They did everything in their ____________ to keep the company.",
+      options: ["truth", "strength", "impression", "power"],
+      correct: 3
+    },
+    {
+      id: 18,
+      question: "I bought a leather bag that ____________ my new boots.",
+      options: ["match", "matches", "suits", "suit"],
+      correct: 1
+    },
+    {
+      id: 19,
+      question: "Both her children have a very vivid ____________.",
+      options: ["description", "impression", "admiration", "imagination"],
+      correct: 3
+    },
+    {
+      id: 20,
+      question: "I've got the ____________ that they're lying again.",
+      options: ["impression", "admiration", "imagination", "description"],
+      correct: 0
+    },
+    {
+      id: 21,
+      question: "Teddy ____________ of moving closer to the city centre.",
+      options: ["thinks", "is thinking", "don't think", "aren't thinking"],
+      correct: 1
+    },
+    {
+      id: 22,
+      question: "We ____________ giving you a lift home.",
+      options: ["don't mind", "aren't minding", "doesn't mind", "isn't minding"],
+      correct: 0
+    },
+    {
+      id: 23,
+      question: "The Potters ____________ to Dubai at 9:00 tomorrow morning.",
+      options: ["is flying", "don't fly", "doesn't fly", "are flying"],
+      correct: 3
+    },
+    {
+      id: 24,
+      question: "____________ is your favorite European city?",
+      options: ["When", "How", "Which", "Who"],
+      correct: 2
+    },
+    {
+      id: 25,
+      question: "____________ much do they charge for a single room with breakfast?",
+      options: ["How", "Who", "What", "Where"],
+      correct: 0
+    },
+    {
+      id: 26,
+      question: "____________ is your brother talking to?",
+      options: ["When", "Who", "Whose", "How"],
+      correct: 1
+    },
+    {
+      id: 27,
+      question: "The teacher ____________ believe his excuse for not coming to school yesterday.",
+      options: ["didn't", "don't", "used to not", "use to"],
+      correct: 0
+    },
+    {
+      id: 28,
+      question: "Bobby ____________ skinny when he was a child.",
+      options: ["was used to", "were", "used to be", "got used"],
+      correct: 2
+    },
+    {
+      id: 29,
+      question: "I ____________ to contact Mr. Peterson twice, but didn't find him.",
+      options: ["tried", "tries", "used to try", "try"],
+      correct: 0
+    },
+    {
+      id: 30,
+      question: "After a couple of days, Sam finally ____________ up early in the morning.",
+      options: ["used to wake", "get used to wake", "wake", "got used to waking"],
+      correct: 3
+    },
+    {
+      id: 31,
+      question: "It took him a month to recover ____________ his illness.",
+      options: ["for", "from", "of", "at"],
+      correct: 1
+    },
+    {
+      id: 32,
+      question: "The book exhibition took ____________ at the Carlton Hotel.",
+      options: ["part", "advantage", "it easy", "place"],
+      correct: 3
+    },
+    {
+      id: 33,
+      question: "I didn't ____________ Jason to come on time.",
+      options: ["expect", "remember", "wait", "reminded"],
+      correct: 0
+    },
+    {
+      id: 34,
+      question: "I'm sorry but I can't find it ____________ the map.",
+      options: ["over", "on", "between", "along"],
+      correct: 1
+    },
+    {
+      id: 35,
+      question: "They spent the whole day in Alexandria looking at the ____________.",
+      options: ["tasks", "part", "jobs", "sights"],
+      correct: 3
+    },
+    {
+      id: 36,
+      question: "He was lucky to find that ____________ in their law firm.",
+      options: ["job", "work", "site", "task"],
+      correct: 0
+    },
+    {
+      id: 37,
+      question: "I think that these trainers belong ____________ your brother.",
+      options: ["on", "in", "to", "at"],
+      correct: 2
+    },
+    {
+      id: 38,
+      question: "They usually take ____________ of what I tell them.",
+      options: ["their time", "part", "place", "no notice"],
+      correct: 3
+    },
+    {
+      id: 39,
+      question: "We never argue ____________ our teacher.",
+      options: ["with", "at", "on", "from"],
+      correct: 0
+    },
+    {
+      id: 40,
+      question: "This dish is very healthy because it consists ____________ fish and vegetables.",
+      options: ["on", "of", "at", "with"],
+      correct: 1
+    },
+    {
+      id: 41,
+      question: "At this time tomorrow, Gerry ____________ his driving test.",
+      options: ["shall take", "going to take", "shall have taken", "will be taking"],
+      correct: 3
+    },
+    {
+      id: 42,
+      question: "Henry ____________ a shower as soon as he finishes cleaning his room.",
+      options: ["will have had", "will have", "have", "is having"],
+      correct: 1
+    },
+    {
+      id: 43,
+      question: "Will you ____________ painting the house by tomorrow?",
+      options: ["finished", "going to finish", "have finished", "finishing"],
+      correct: 2
+    },
+    {
+      id: 44,
+      question: "Those cars are going really fast. There ____________ an accident.",
+      options: ["is", "will have been", "is going to be", "going to be"],
+      correct: 2
+    },
+    {
+      id: 45,
+      question: "They could take better pictures if they ____________ a digital camera.",
+      options: ["would have", "will have", "had", "are going to have"],
+      correct: 2
+    },
+    {
+      id: 46,
+      question: "If I ____________ by the sea, I would go fishing every day.",
+      options: ["lived", "would live", "live", "will be living"],
+      correct: 0
+    },
+    {
+      id: 47,
+      question: "Could I have ____________ more apple juice, please?",
+      options: ["no", "some", "any", "many"],
+      correct: 1
+    },
+    {
+      id: 48,
+      question: "I can't drink this tea. There's too ____________ sugar in it.",
+      options: ["much", "plenty", "many", "lot of"],
+      correct: 0
+    },
+    {
+      id: 49,
+      question: "How ____________ teachers were there at the seminar yesterday?",
+      options: ["some", "many", "any", "much"],
+      correct: 1
+    },
+    {
+      id: 50,
+      question: "Don't leave. There are ____________ more things I want to tell you.",
+      options: ["few", "any", "little", "a few"],
+      correct: 3
+    },
+    {
+      id: 51,
+      question: "He finished my portrait yesterday, but he's putting ____________ at the moment.",
+      options: ["it mildly", "the final touches", "ideas into my head", "an end to"],
+      correct: 1
+    },
+    {
+      id: 52,
+      question: "Do you think you could put ____________ with the head teacher?",
+      options: ["an end to", "it mildly", "the final touches", "in a good word for me"],
+      correct: 3
+    },
+    {
+      id: 53,
+      question: "I finally ____________ trying to make him change his mind.",
+      options: ["gave up", "gave out", "gave back", "gave off"],
+      correct: 0
+    },
+    {
+      id: 54,
+      question: "They told me to ____________ these leaflets.",
+      options: ["give off", "give out", "give up", "give in to"],
+      correct: 1
+    },
+    {
+      id: 55,
+      question: "They ____________ the meeting because the chairman had to leave.",
+      options: ["showed off", "paid off", "got off", "put off"],
+      correct: 3
+    },
+    {
+      id: 56,
+      question: "Andy loves ____________ his brand-new sports car.",
+      options: ["giving off", "putting off", "showing off", "cooling off"],
+      correct: 2
+    },
+    {
+      id: 57,
+      question: "I broke my leg as I was ____________ the bus yesterday morning.",
+      options: ["cooling off", "giving off", "paying off", "getting off"],
+      correct: 3
+    },
+    {
+      id: 58,
+      question: "According ____________ Ned, that's the best Chinese restaurant in the city.",
+      options: ["of", "in", "at", "to"],
+      correct: 3
+    },
+    {
+      id: 59,
+      question: "Unfortunately, he didn't succeed ____________ getting the job after all.",
+      options: ["in", "on", "for", "at"],
+      correct: 0
+    },
+    {
+      id: 60,
+      question: "Matt worked so hard that he finally made ____________.",
+      options: ["haste", "it to the top", "the most of", "difficult"],
+      correct: 1
+    },
+    {
+      id: 61,
+      question: "The Carlstons have never ____________ Denmark before.",
+      options: ["been to", "gone to", "gone in", "been at"],
+      correct: 0
+    },
+    {
+      id: 62,
+      question: "Have you ____________ thought of studying abroad?",
+      options: ["since", "before", "never", "ever"],
+      correct: 3
+    },
+    {
+      id: 63,
+      question: "Danny ____________ tennis since he was a child.",
+      options: ["played", "plays", "been playing", "has been playing"],
+      correct: 3
+    },
+    {
+      id: 64,
+      question: "It has been raining heavily ____________ our plane took off two hours ago.",
+      options: ["while", "already", "since", "still"],
+      correct: 2
+    },
+    {
+      id: 65,
+      question: "Mr. Marfin ____________ go on business trip very often.",
+      options: ["need", "needs", "doesn't have", "has to"],
+      correct: 3
+    },
+    {
+      id: 66,
+      question: "We can't meet Jack today. We ____________ to work overtime.",
+      options: ["have", "must", "had better", "would rather"],
+      correct: 0
+    },
+    {
+      id: 67,
+      question: "I'd ____________ join you for dinner than stay at home.",
+      options: ["rather", "had better", "need", "must"],
+      correct: 0
+    },
+    {
+      id: 68,
+      question: "Luckily, we ____________ wait for them. We can leave right now.",
+      options: ["don't have", "don't need", "needn't", "not have to"],
+      correct: 2
+    },
+    {
+      id: 69,
+      question: "She ____________ still be at home. I talked to her on the phone a couple of minutes ago.",
+      options: ["has to", "better", "must", "needs"],
+      correct: 2
+    },
+    {
+      id: 70,
+      question: "____________ see an optician. I can't see very clearly lately.",
+      options: ["would rather", "may not", "might not", "had better"],
+      correct: 3
+    },
+    {
+      id: 71,
+      question: "My brother came ____________ the flu last week and hasn't recovered yet.",
+      options: ["across", "apart", "up with", "down with"],
+      correct: 3
+    },
+    {
+      id: 72,
+      question: "Why don't you ask Felix? He always comes ____________ great ideas.",
+      options: ["off", "up with", "down with", "apart"],
+      correct: 1
+    },
+    {
+      id: 73,
+      question: "They haven't cleaned their attic ____________.",
+      options: ["for ages", "in the future", "in common", "out of the ordinary"],
+      correct: 0
+    },
+    {
+      id: 74,
+      question: "I really had no intention ____________ insulting your father.",
+      options: ["of", "for", "on", "at"],
+      correct: 0
+    },
+    {
+      id: 75,
+      question: "They aren't interested ____________ buying Steve's country house.",
+      options: ["to", "on", "in", "for"],
+      correct: 2
+    },
+    {
+      id: 76,
+      question: "We must ____________ into consideration everything he said.",
+      options: ["regard", "give", "think", "take"],
+      correct: 3
+    },
+    {
+      id: 77,
+      question: "We're looking ____________ seeing our grandparents.",
+      options: ["after", "out", "over", "forward to"],
+      correct: 3
+    },
+    {
+      id: 78,
+      question: "Brad ____________ his best to please his guests yesterday evening.",
+      options: ["took", "did", "brought", "made"],
+      correct: 1
+    },
+    {
+      id: 79,
+      question: "Eating more fruit and vegetables will do you ____________.",
+      options: ["badly", "well", "good", "best"],
+      correct: 2
+    },
+    {
+      id: 80,
+      question: "I'm afraid that the new sales representative doesn't ____________ the manager.",
+      options: ["get by", "get through", "get across", "get on well with"],
+      correct: 3
+    },
+    {
+      id: 81,
+      question: "I could ____________ killed if the driver hadn't stopped quickly.",
+      options: ["have", "have been", "to have", "to have been"],
+      correct: 1
+    },
+    {
+      id: 82,
+      question: "If the meat ____________ so tough, the children would have eaten it.",
+      options: ["hadn't been", "hasn't been", "wouldn't be", "wouldn't have been"],
+      correct: 0
+    },
+    {
+      id: 83,
+      question: "If you hadn't helped me, I ____________ finished on time.",
+      options: ["didn't", "wouldn't", "wouldn't be", "wouldn't have"],
+      correct: 3
+    },
+    {
+      id: 84,
+      question: "He wouldn't have believed me if he ____________ it with his own eyes.",
+      options: ["haven't seen", "wouldn't see", "hadn't seen", "hadn't been seen"],
+      correct: 2
+    },
+    {
+      id: 85,
+      question: "I wish I ____________ answer all his questions.",
+      options: ["can", "could", "had", "have to"],
+      correct: 1
+    },
+    {
+      id: 86,
+      question: "If only the fire brigade ____________ earlier.",
+      options: ["arrives", "has arrived", "was arriving", "had arrived"],
+      correct: 3
+    },
+    {
+      id: 87,
+      question: "He wishes he ____________ so many mistakes.",
+      options: ["made", "hadn't made", "hasn't made", "had made"],
+      correct: 1
+    },
+    {
+      id: 88,
+      question: "____________ these two books have the information I need.",
+      options: ["None", "Not any", "Neither of", "Not of"],
+      correct: 2
+    },
+    {
+      id: 89,
+      question: "____________ Ian and Gerry took part in the competition.",
+      options: ["Both", "Either", "Neither", "All"],
+      correct: 0
+    },
+    {
+      id: 90,
+      question: "____________ four of my friends have their own computer.",
+      options: ["None", "All", "Either", "Both"],
+      correct: 1
+    },
+    {
+      id: 91,
+      question: "I thought I knew him very well, but it would never have gone ____________ that he would decide to live abroad.",
+      options: ["wild", "red", "bananas", "through my mind"],
+      correct: 3
+    },
+    {
+      id: 92,
+      question: "Liam and Ken have checked it. I'm sure nothing can ____________.",
+      options: ["go wrong", "go wild", "go red", "go over the top"],
+      correct: 0
+    },
+    {
+      id: 93,
+      question: "Dean is very shy. He always goes ____________ when somebody talks to him.",
+      options: ["bad", "red", "wrong", "through his mind"],
+      correct: 1
+    },
+    {
+      id: 94,
+      question: "It's very hot in here. Don't leave the fish out of the fridge because it will ____________.",
+      options: ["go wild", "go bananas", "go bad", "go over the top"],
+      correct: 2
+    },
+    {
+      id: 95,
+      question: "At ____________, you've got your own bedroom now that you moved house.",
+      options: ["last", "late", "lately", "later"],
+      correct: 0
+    },
+    {
+      id: 96,
+      question: "I've noticed that Helen hasn't been feeling very well ____________.",
+      options: ["latest", "later", "late", "lately"],
+      correct: 3
+    },
+    {
+      id: 97,
+      question: "I try not to have dinner ____________ at night.",
+      options: ["last", "late", "latest", "least"],
+      correct: 1
+    },
+    {
+      id: 98,
+      question: "You could at ____________ phone me to let me know that you wouldn't come.",
+      options: ["later", "late", "least", "latest"],
+      correct: 2
+    },
+    {
+      id: 99,
+      question: "I can't stand him anymore; I'm going to put things straight ____________.",
+      options: ["all over", "at all", "all the same", "once and for all"],
+      correct: 3
+    },
+    {
+      id: 100,
+      question: "____________, his comments on their behaviour seemed fair.",
+      options: ["All over", "All in all", "At all", "All year round"],
+      correct: 1
+    }
+  ];
+
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [mode, setMode] = useState('practice'); // 'practice' or 'test'
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
+  const [shuffledOptions, setShuffledOptions] = useState({});
+  const [isShuffled, setIsShuffled] = useState(false);
+
+  // Hàm đảo mảng
+  const shuffleArray = (array) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  // Tự động đảo câu hỏi và đáp án khi component mount
+  useEffect(() => {
+    // Đảo thứ tự câu hỏi
+    const newShuffledQuestions = shuffleArray(questions);
+
+    // Đảo thứ tự đáp án cho mỗi câu hỏi
+    const newShuffledOptions = {};
+    newShuffledQuestions.forEach((q, idx) => {
+      newShuffledOptions[idx] = shuffleArray([0, 1, 2, 3]);
+    });
+
+    setShuffledQuestions(newShuffledQuestions);
+    setShuffledOptions(newShuffledOptions);
+    setIsShuffled(true);
+  }, []);
+
+  const handleAnswerSelect = (index) => {
+    if (mode === 'test' && userAnswers[currentQuestion] !== undefined) {
+      return; // Can't change answer in test mode
+    }
+    setSelectedAnswer(index);
+    if (mode === 'practice') {
+      setShowResult(true);
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedAnswer !== null) {
+      setUserAnswers({
+        ...userAnswers,
+        [currentQuestion]: selectedAnswer
+      });
+    }
+
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setSelectedAnswer(userAnswers[currentQuestion + 1] ?? null);
+      setShowResult(false);
+    } else if (mode === 'test') {
+      setQuizCompleted(true);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+      setSelectedAnswer(userAnswers[currentQuestion - 1] ?? null);
+      setShowResult(false);
+    }
+  };
+
+  const handleReset = () => {
+    // Re-shuffle questions and options when resetting
+    const newShuffledQuestions = shuffleArray(questions);
+    const newShuffledOptions = {};
+    newShuffledQuestions.forEach((q, idx) => {
+      newShuffledOptions[idx] = shuffleArray([0, 1, 2, 3]);
+    });
+
+    setShuffledQuestions(newShuffledQuestions);
+    setShuffledOptions(newShuffledOptions);
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setUserAnswers({});
+    setQuizCompleted(false);
+  };
+
+  const calculateScore = () => {
+    let correct = 0;
+    Object.keys(userAnswers).forEach(key => {
+      const question = shuffledQuestions[key];
+      const originalCorrectIndex = question.correct;
+      const shuffledCorrectIndex = shuffledOptions[key].indexOf(originalCorrectIndex);
+      if (userAnswers[key] === shuffledCorrectIndex) {
+        correct++;
+      }
+    });
+    return correct;
+  };
+
+  const getOptionLabel = (index) => {
+    return String.fromCharCode(65 + index); // A, B, C, D
+  };
+
+  if (quizCompleted) {
+    const score = calculateScore();
+    const percentage = Math.round((score / questions.length) * 100);
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4 md:p-8 pt-16 sm:pt-4">
+        <div className="max-w-3xl mx-auto bg-white rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8 text-center">
+          <Award className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto mb-4 sm:mb-6 text-yellow-500" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-3 sm:mb-4">Hoàn thành!</h1>
+          <div className="text-4xl sm:text-5xl md:text-6xl font-bold text-indigo-600 mb-2">{percentage}%</div>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8">
+            Bạn trả lời đúng {score}/{questions.length} câu
+          </p>
+
+          <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 sm:gap-2 mb-6 sm:mb-8">
+            {shuffledQuestions.map((q, idx) => {
+              const originalCorrectIndex = q.correct;
+              const shuffledCorrectIndex = shuffledOptions[idx]?.indexOf(originalCorrectIndex);
+              const isCorrect = userAnswers[idx] === shuffledCorrectIndex;
+              const isAnswered = userAnswers[idx] !== undefined;
+              return (
+                <div
+                  key={idx}
+                  className={`p-1.5 sm:p-2 rounded text-xs sm:text-sm font-semibold ${
+                    !isAnswered ? 'bg-gray-200 text-gray-500' :
+                    isCorrect ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                  }`}
+                >
+                  {idx + 1}
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={handleReset}
+            className="bg-indigo-600 text-white px-5 py-2.5 sm:px-8 sm:py-3 rounded-lg font-semibold hover:bg-indigo-700 transition inline-flex items-center gap-2 text-sm sm:text-base"
+          >
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+            Làm lại
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (shuffledQuestions.length === 0) return null;
+
+  const question = shuffledQuestions[currentQuestion];
+  const optionOrder = shuffledOptions[currentQuestion] || [0, 1, 2, 3];
+  const originalCorrectIndex = question.correct;
+  const shuffledCorrectIndex = optionOrder.indexOf(originalCorrectIndex);
+  const isCorrect = selectedAnswer === shuffledCorrectIndex;
+  const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-3 sm:p-4 md:p-8 pt-16 sm:pt-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-t-xl sm:rounded-t-2xl shadow-lg p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
+              Bài tập Ngữ pháp Tiếng Anh
+            </h1>
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+              <button
+                onClick={() => setMode('practice')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition text-xs sm:text-sm ${
+                  mode === 'practice'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                }`}
+              >
+                Luyện tập
+              </button>
+              <button
+                onClick={() => setMode('test')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-semibold transition text-xs sm:text-sm ${
+                  mode === 'test'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                }`}
+              >
+                Kiểm tra
+              </button>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div
+              className="bg-indigo-600 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            Câu {currentQuestion + 1} / {shuffledQuestions.length}
+          </p>
+        </div>
+
+        {/* Question */}
+        <div className="bg-white shadow-lg p-4 sm:p-6 md:p-8 mb-4">
+          <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6 leading-relaxed">
+            {question.question}
+          </h2>
+
+          {/* Options */}
+          <div className="space-y-2 sm:space-y-3">
+            {optionOrder.map((originalIndex, displayIndex) => {
+              const option = question.options[originalIndex];
+              const isSelected = selectedAnswer === displayIndex;
+              const isCorrectOption = displayIndex === shuffledCorrectIndex;
+
+              let bgClass = 'bg-gray-50 hover:bg-gray-100 border-gray-300';
+
+              if (showResult && mode === 'practice') {
+                if (isCorrectOption) {
+                  bgClass = 'bg-green-100 border-green-500';
+                } else if (isSelected && !isCorrect) {
+                  bgClass = 'bg-red-100 border-red-500';
+                }
+              } else if (isSelected) {
+                bgClass = 'bg-indigo-100 border-indigo-500';
+              }
+
+              return (
+                <button
+                  key={displayIndex}
+                  onClick={() => handleAnswerSelect(displayIndex)}
+                  className={`w-full text-left p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 transition ${bgClass} flex items-center gap-2 sm:gap-3`}
+                >
+                  <span className="font-bold text-sm sm:text-base md:text-lg min-w-[28px] sm:min-w-[32px] h-7 sm:h-8 flex items-center justify-center bg-white rounded-lg flex-shrink-0">
+                    {getOptionLabel(displayIndex)}
+                  </span>
+                  <span className="text-sm sm:text-base md:text-lg">{option}</span>
+                  {showResult && mode === 'practice' && isCorrectOption && (
+                    <Check className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 ml-auto flex-shrink-0" />
+                  )}
+                  {showResult && mode === 'practice' && isSelected && !isCorrect && (
+                    <X className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 ml-auto flex-shrink-0" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Explanation Section */}
+          {showResult && mode === 'practice' && (
+            <div className="mt-4 sm:mt-6 p-4 sm:p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-bold text-base sm:text-lg text-blue-900 mb-2">Giải thích chi tiết:</h3>
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                    {getExplanation(question.id)}
+                  </p>
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <p className="text-xs sm:text-sm font-semibold text-green-700">
+                      ✓ Đáp án đúng: {getOptionLabel(shuffledCorrectIndex)} - {question.options[originalCorrectIndex]}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="bg-white rounded-b-xl sm:rounded-b-2xl shadow-lg p-3 sm:p-4 md:p-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 sm:gap-4">
+          <button
+            onClick={handlePrevious}
+            disabled={currentQuestion === 0}
+            className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm sm:text-base order-1 sm:order-1"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Câu trước</span>
+            <span className="sm:hidden">Trước</span>
+          </button>
+
+          <button
+            onClick={handleReset}
+            className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition text-sm sm:text-base order-3 sm:order-2"
+          >
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+            Làm lại
+          </button>
+
+          <button
+            onClick={handleNext}
+            disabled={selectedAnswer === null}
+            className="flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm sm:text-base order-2 sm:order-3"
+          >
+            <span className="hidden sm:inline">{currentQuestion === shuffledQuestions.length - 1 && mode === 'test' ? 'Hoàn thành' : 'Câu sau'}</span>
+            <span className="sm:hidden">{currentQuestion === shuffledQuestions.length - 1 && mode === 'test' ? 'Hoàn thành' : 'Sau'}</span>
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GrammarQuiz;
