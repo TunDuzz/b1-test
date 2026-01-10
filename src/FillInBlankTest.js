@@ -9,6 +9,9 @@ const FillInBlankTest = () => {
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [shuffledOptions, setShuffledOptions] = useState({});
 
+  // NEW: trạng thái hiện/ẩn đáp án từng câu
+  const [showAnswerMap, setShowAnswerMap] = useState({});
+
   const currentText = fillInBlankTexts[currentTextIndex];
 
   // Hàm đảo mảng
@@ -19,6 +22,14 @@ const FillInBlankTest = () => {
       [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
     return newArray;
+  };
+
+  // NEW: toggle hiện/ẩn đáp án cho từng câu
+  const toggleShowAnswer = (questionId) => {
+    setShowAnswerMap((prev) => ({
+      ...prev,
+      [questionId]: !prev[questionId],
+    }));
   };
 
   // Tự động đảo đáp án cho câu hỏi có options khi chuyển bài
@@ -36,6 +47,9 @@ const FillInBlankTest = () => {
     setShuffledOptions(newShuffledOptions);
     setUserAnswers({});
     setShowResults(false);
+
+    // NEW: reset hiển thị đáp án khi đổi bài
+    setShowAnswerMap({});
   }, [currentTextIndex, currentText.questions]);
 
   const handleAnswerChange = (questionId, value, hasOptions = false, shuffledIndex = null) => {
@@ -44,14 +58,14 @@ const FillInBlankTest = () => {
     let answerValue = value;
     if (hasOptions && shuffledIndex !== null) {
       // Convert shuffled index back to original option index
-      const question = currentText.questions.find(q => q.id === questionId);
+      const question = currentText.questions.find((q) => q.id === questionId);
       const originalIndex = shuffledOptions[questionId][shuffledIndex];
       answerValue = question.options[originalIndex];
     }
 
     setUserAnswers({
       ...userAnswers,
-      [questionId]: answerValue
+      [questionId]: answerValue,
     });
   };
 
@@ -73,6 +87,9 @@ const FillInBlankTest = () => {
     setShuffledOptions(newShuffledOptions);
     setUserAnswers({});
     setShowResults(false);
+
+    // NEW: reset hiển thị đáp án khi làm lại
+    setShowAnswerMap({});
   };
 
   const handleNextText = () => {
@@ -89,7 +106,7 @@ const FillInBlankTest = () => {
 
   const calculateScore = () => {
     let correct = 0;
-    currentText.questions.forEach(q => {
+    currentText.questions.forEach((q) => {
       const userAnswer = userAnswers[q.id]?.trim().toLowerCase();
       const correctAnswer = q.answer.trim().toLowerCase();
       if (userAnswer === correctAnswer) {
@@ -99,7 +116,7 @@ const FillInBlankTest = () => {
     return correct;
   };
 
-  const allAnswered = currentText.questions.every(q => userAnswers[q.id] && userAnswers[q.id].trim() !== '');
+  const allAnswered = currentText.questions.every((q) => userAnswers[q.id] && userAnswers[q.id].trim() !== '');
 
   const getOptionLabel = (index) => {
     return String.fromCharCode(65 + index);
@@ -152,7 +169,9 @@ const FillInBlankTest = () => {
                       }`}
                     >
                       <div className="flex items-start gap-2 sm:gap-3">
-                        <span className="font-bold text-base sm:text-lg min-w-[24px] sm:min-w-[30px] flex-shrink-0">{q.blank}</span>
+                        <span className="font-bold text-base sm:text-lg min-w-[24px] sm:min-w-[30px] flex-shrink-0">
+                          {q.blank}
+                        </span>
                         <div className="flex-1 min-w-0">
                           {q.options ? (
                             <div className="grid grid-cols-2 gap-2 mb-3">
@@ -261,9 +280,7 @@ const FillInBlankTest = () => {
           <div className="bg-teal-50 border-l-4 border-teal-500 p-3 sm:p-4 rounded">
             <div className="flex items-start gap-2">
               <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600 mt-0.5 flex-shrink-0" />
-              <p className="text-xs sm:text-sm text-gray-700">
-                {currentText.passage}
-              </p>
+              <p className="text-xs sm:text-sm text-gray-700">{currentText.passage}</p>
             </div>
           </div>
         </div>
@@ -272,9 +289,7 @@ const FillInBlankTest = () => {
         <div className="bg-white shadow-lg p-4 sm:p-6 md:p-8 mb-4">
           <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Đọc và điền từ vào chỗ trống:</h3>
           <div className="p-4 sm:p-6 bg-gray-50 rounded-lg">
-            <p className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {currentText.text}
-            </p>
+            <p className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-wrap">{currentText.text}</p>
           </div>
         </div>
 
@@ -294,35 +309,54 @@ const FillInBlankTest = () => {
                   </div>
 
                   {question.options ? (
-                    // Multiple choice question
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 sm:ml-10">
-                      {shuffledOptions[question.id]?.map((originalIndex, shuffledIndex) => {
-                        const option = question.options[originalIndex];
-                        const isSelected = userAnswer?.toLowerCase() === option.toLowerCase();
+                    <>
+                      {/* Multiple choice question */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 sm:ml-10">
+                        {shuffledOptions[question.id]?.map((originalIndex, shuffledIndex) => {
+                          const option = question.options[originalIndex];
+                          const isSelected = userAnswer?.toLowerCase() === option.toLowerCase();
 
-                        return (
-                          <button
-                            key={shuffledIndex}
-                            onClick={() => handleAnswerChange(question.id, option, true, shuffledIndex)}
-                            className={`p-3 sm:p-4 rounded-lg border-2 transition font-semibold text-sm sm:text-base text-left ${
-                              isSelected
-                                ? 'bg-teal-100 border-teal-500 text-teal-800'
-                                : 'bg-gray-50 border-gray-300 hover:bg-gray-100 text-gray-700'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className={`font-bold min-w-[24px] ${isSelected ? 'text-teal-800' : 'text-teal-600'}`}>
-                                {getOptionLabel(shuffledIndex)}.
-                              </span>
-                              <span className="break-words">{option}</span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                          return (
+                            <button
+                              key={shuffledIndex}
+                              onClick={() => handleAnswerChange(question.id, option, true, shuffledIndex)}
+                              className={`p-3 sm:p-4 rounded-lg border-2 transition font-semibold text-sm sm:text-base text-left ${
+                                isSelected
+                                  ? 'bg-teal-100 border-teal-500 text-teal-800'
+                                  : 'bg-gray-50 border-gray-300 hover:bg-gray-100 text-gray-700'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className={`font-bold min-w-[24px] ${isSelected ? 'text-teal-800' : 'text-teal-600'}`}>
+                                  {getOptionLabel(shuffledIndex)}.
+                                </span>
+                                <span className="break-words">{option}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* NEW: Show answer toggle for options */}
+                      <div className="sm:ml-10 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleShowAnswer(question.id)}
+                          className="text-sm text-teal-600 hover:underline"
+                        >
+                          {showAnswerMap[question.id] ? 'Ẩn đáp án' : 'Hiện đáp án'}
+                        </button>
+
+                        {showAnswerMap[question.id] && (
+                          <p className="mt-1 text-green-700 font-semibold text-sm">
+                            ✓ Đáp án đúng: {question.answer}
+                          </p>
+                        )}
+                      </div>
+                    </>
                   ) : (
-                    // Fill in the blank question
-                    <div className="sm:ml-10">
+                    <div className="sm:ml-10 space-y-2">
+                      {/* Fill in the blank question */}
                       <input
                         type="text"
                         value={userAnswer || ''}
@@ -330,6 +364,21 @@ const FillInBlankTest = () => {
                         placeholder="Nhập đáp án..."
                         className="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:border-teal-500 focus:outline-none text-sm sm:text-base"
                       />
+
+                      {/* NEW: Show answer toggle for input */}
+                      <button
+                        type="button"
+                        onClick={() => toggleShowAnswer(question.id)}
+                        className="text-sm text-teal-600 hover:underline"
+                      >
+                        {showAnswerMap[question.id] ? 'Ẩn đáp án' : 'Hiện đáp án'}
+                      </button>
+
+                      {showAnswerMap[question.id] && (
+                        <p className="text-green-700 font-semibold text-sm">
+                          ✓ Đáp án đúng: {question.answer}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
